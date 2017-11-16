@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        canvas {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width="600" height="400"></canvas>
+    <script>
+
+        var Chart = function (ctx) {
+            //获取上下文 获取画布
+            this.ctx = ctx || document.querySelector('canvas').getContext('2d');
+            // 画布的大小
+            this.canvasHeight = this.ctx.canvas.height;
+            this.canvasWidth = this.ctx.canvas.width;
+            //格子的大小
+            this.grid = 10;
+            //点的大小
+            this.dotted = 10;
+            //坐标位置
+            this.space = 20;
+            //坐标原点
+            this.x0 = this.space;
+            this.y0 = this.canvasHeight - this.space;
+            //箭头的大小
+            this.arrow = 10;
+        }
+        //格式化
+        Chart.prototype.init = function (data) {
+            this.drawBu();
+            this.drawZhou();
+            this.drawDian(data);
+        }
+        //画布
+        Chart.prototype.drawBu = function () {
+            //x轴
+            var xGrid = Math.floor(this.canvasHeight / this.grid);
+            this.ctx.strokeStyle = '#eee';
+            for (var i = 0; i <= xGrid; i++) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, i * this.grid - 0.5);
+                this.ctx.lineTo(this.canvasWidth, i * this.grid - 0.5);
+                this.ctx.stroke();
+            }
+            //y轴
+            var yGrid = Math.floor(this.canvasWidth / this.grid);
+            for (var i = 0; i <= yGrid; i++) {
+                this.ctx.beginPath();
+                this.ctx.moveTo(i * this.grid - 0.5, 0);
+                this.ctx.lineTo(i * this.grid - 0.5, this.canvasHeight);
+                this.ctx.stroke();
+            }
+        }
+        //坐标轴
+        Chart.prototype.drawZhou = function () {
+            //x轴
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = '#000';
+            this.ctx.moveTo(this.x0, this.y0);
+            this.ctx.lineTo(this.canvasWidth - this.space, this.y0);
+            this.ctx.lineTo(this.canvasWidth - this.space - this.arrow, this.y0 + this.arrow / 2);
+            this.ctx.lineTo(this.canvasWidth - this.space - this.arrow, this.y0 - this.arrow / 2);
+            this.ctx.lineTo(this.canvasWidth - this.space, this.y0);
+            this.ctx.stroke();
+            this.ctx.fill();
+            //y轴
+            this.ctx.beginPath();
+            this.ctx.moveTo(this.x0, this.y0);
+            this.ctx.lineTo(this.space, this.space);
+            this.ctx.lineTo(this.space + this.arrow / 2, this.space + this.arrow);
+            this.ctx.lineTo(this.space - this.arrow / 2, this.space + this.arrow);
+            this.ctx.lineTo(this.space, this.space);
+            this.ctx.stroke();
+            this.ctx.fill();
+        }
+        //点
+        Chart.prototype.drawDian = function (data) {
+
+            var that = this;
+
+            var prevX = 0;
+            var prevY = 0;
+
+            data.forEach(function (item, i) {
+                //原点
+                var canvasX = that.x0 + item.x;
+                var canvasY = that.y0 - item.y;
+
+                that.ctx.beginPath();
+                that.ctx.moveTo(canvasX - that.dotted / 2, canvasY - that.dotted / 2);
+                that.ctx.lineTo(canvasX + that.dotted / 2, canvasY - that.dotted / 2);
+                that.ctx.lineTo(canvasX + that.dotted / 2, canvasY + that.dotted / 2);
+                that.ctx.lineTo(canvasX - that.dotted / 2, canvasY + that.dotted / 2);
+                that.ctx.closePath();
+                that.ctx.stroke();
+                that.ctx.fill();
+
+                if (i == 0) {
+                    that.ctx.beginPath();
+                    that.ctx.moveTo(that.x0, that.y0);
+                    that.ctx.lineTo(canvasX, canvasY);
+                    that.ctx.stroke();
+                } else {
+                    that.ctx.beginPath();
+                    that.ctx.moveTo(prevX, prevY);
+                    that.ctx.lineTo(canvasX, canvasY);
+                    that.ctx.stroke();
+                }
+
+                prevX = canvasX;
+                prevY = canvasY;
+            });
+        }
+        data = [
+            {
+                x: 100,
+                y: 120
+            },
+            {
+                x: 200,
+                y: 160
+            },
+            {
+                x: 300,
+                y: 240
+            },
+            {
+                x: 400,
+                y: 120
+            },
+            {
+                x: 500,
+                y: 80
+            }
+        ];
+
+        var Chart = new Chart();
+        Chart.init(data);
+    </script>
+</body>
+
+</html>
